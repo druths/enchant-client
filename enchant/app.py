@@ -13,6 +13,7 @@ def get_current_time():
 
 @subcmd(help='send a text block to the server')
 def txt(parser,context,args):
+	parser.add_argument('-u','--user',default=os.environ['USER'],help='the username to use')
 	parser.add_argument('notebook')
 	parser.add_argument('title')
 	parser.add_argument('content',help='the text to send. if "-", will read text from stdin')
@@ -24,22 +25,24 @@ def txt(parser,context,args):
 	if text_content == '-':
 		text_content = sys.stdin.read()
 
-	server_info = upload.ServerInfo(context.address,context.port)
-	upload.send_text(server_info,args.notebook,args.title,get_current_time(),text_content)
+	server_info = upload.ServerInfo(context.host,context.port)
+	upload.send_text(server_info,args.user,args.notebook,args.title,get_current_time(),text_content)
 
 @subcmd(help='send an image block to the server')
 def img(parser,context,args):
+	parser.add_argument('-u','--user',default=os.environ['USER'],help='the username to use')
 	parser.add_argument('notebook')
 	parser.add_argument('title')
 	parser.add_argument('image')
 
 	args = parser.parse_args(args)
 
-	server_info = upload.ServerInfo(context.address,context.port)
-	upload.send_image_file(server_info,args.notebook,args.title,get_current_time(),args.image)
+	server_info = upload.ServerInfo(context.host,context.port)
+	upload.send_image_file(server_info,args.user,args.notebook,args.title,get_current_time(),args.image)
 
 @subcmd(help='send an html block to the server')
 def html(parser,context,args):
+	parser.add_argument('-u','--user',default=os.environ['USER'],help='the username to use')
 	parser.add_argument('notebook')
 	parser.add_argument('title')
 	parser.add_argument('content',help='the html to send. if "-", will read text from stdin')
@@ -51,17 +54,17 @@ def html(parser,context,args):
 	if html_content == '-':
 		html_content = sys.stdin.read()
 
-	server_info = upload.ServerInfo(context.address,context.port)
-	upload.send_html(server_info,args.notebook,args.title,get_current_time(),html_content)
+	server_info = upload.ServerInfo(context.host,context.port)
+	upload.send_html(server_info,args.user,args.notebook,args.title,get_current_time(),html_content)
 
 #####
 # Main function
 def main():
 	handler = ArgumentHandler('enchant',use_subcommand_help=True)
 	handler.set_logging_argument('-L')
-	handler.add_argument('-A','--address',default='127.0.0.1',
-						 help='the address for the enchant server')
-	handler.add_argument('-P','--port',type=int,default=3150,
+	handler.add_argument('-H','--host',default='127.0.0.1',
+						 help='the host for the enchant server')
+	handler.add_argument('-P','--port',type=int,default=13105,
 						 help='the port for the enchant server')
 
 	handler.run()
