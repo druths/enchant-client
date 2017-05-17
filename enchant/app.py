@@ -10,10 +10,10 @@ import upload
 logger = logging.getLogger(os.path.basename(__file__))
 
 def context_to_config(context):
-    cinfo = Config( host=context.host,
-                    port=context.port,
-                    username=context.username,
-                    password=context.password)
+    cinfo = config.Config(  host=context.host,
+                            port=context.port,
+                            username=context.username,
+                            password=context.password)
 
     return cinfo
 
@@ -71,7 +71,7 @@ def main():
                          help='the host for the enchant server')
     handler.add_argument('-P','--port',type=int,default=config_info.port,
                          help='the port for the enchant server')
-    handler.add_argument('-u','--user',default=config_info.username,help='the username to use')
+    handler.add_argument('-u','--username',default=config_info.username,help='the username to use')
     handler.add_argument('-p','--password',default=config_info.password,help='the password to use')
 
     handler.run()

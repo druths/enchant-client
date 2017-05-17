@@ -30,14 +30,14 @@ def send_text(notebook,title,content,timestamp=None,config_info=None):
         config_info = config.load_default_config_info()
 
     if timestamp is None:
-        timestamp = current_time()
+        timestamp = get_current_time()
 
     headers = {'Content-Type': 'text/plain'}
 
     header = '{"title":"%s","timestamp":"%s"}' % (title,timestamp)
     full_content = '%s\n%s' % (header,content)
 
-    complete_url = '%s/submit/text/%s/%s' % (server_info.to_url(),username,notebook)
+    complete_url = '%s/submit/text/%s/%s' % (config_to_url(config_info),config_info.username,notebook)
     r = requests.post(complete_url,data=full_content,headers=headers)
 
     handle_result(r.text)
@@ -46,15 +46,15 @@ def send_html(notebook,title,content,timestamp=None,config_info=None):
     if config_info is None:
         config_info = config.load_default_config_info()
 
-     if timestamp is None:
-        timestamp = current_time()
+    if timestamp is None:
+        timestamp = get_current_time()
    
     headers = {'Content-Type': 'text/html'}
 
     header = '{"title":"%s","timestamp":"%s"}' % (title,timestamp)
     full_content = '%s\n%s' % (header,content)
 
-    complete_url = '%s/submit/html/%s/%s' % (server_info.to_url(),username,notebook)
+    complete_url = '%s/submit/html/%s/%s' % (config_to_url(config_info),config_info.username,notebook)
     r = requests.post(complete_url,data=full_content,headers=headers)
 
     handle_result(r.text)
@@ -64,9 +64,9 @@ def send_image_file(notebook,title,image_filename,timestamp=None,config_info=Non
         config_info = config.load_default_config_info()
 
     if timestamp is None:
-        timestamp = current_time()
+        timestamp = get_current_time()
 
-    complete_url = '%s/submit/image/%s/%s' % (server_info.to_url(),username,notebook)
+    complete_url = '%s/submit/image/%s/%s' % (config_to_url(config_info),config_info.username,notebook)
 
     header = {'title':title, 'timestamp':timestamp}
     files = {'file': open(image_filename,'rb')}
