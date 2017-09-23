@@ -2,8 +2,10 @@ import os.path, sys
 import logging
 import json
 import getpass
+import subprocess
 
 from arghandler import ArgumentHandler, subcmd
+import argparse
 
 import config
 import upload
@@ -129,7 +131,6 @@ def html(parser,context,args):
 
     upload.send_html(args.notebook,args.title,html_content,None,context_to_config(context))
 
-"""
 @subcmd(help='send the results of an execution task to the server as a text block')
 def run(parser,context,args):
     local_config = config.load_local_config()
@@ -137,8 +138,17 @@ def run(parser,context,args):
     parser.add_argument('-n','--notebook',required=local_config.notebook is None,default=local_config.notebook)
     parser.add_argument('-t','--title',required=False,default=None)
     parser.add_argument('cmd',nargs=argparse.REMAINDER)
-"""
 
+    args = parser.parse_args(args)
+
+    # run the command
+    cmd = ' '.join(args.cmd)
+    logger.info('executing command: %s' % cmd)
+    output = subprocess.check_output(cmd,shell=True,stderr=subprocess.STDOUT)
+
+    title = args.title if args.title is not None else cmd
+
+    upload.send_text(args.notebook,title,output,config_info=context_to_config(context))
 
 #####
 # Main function
