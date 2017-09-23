@@ -55,4 +55,68 @@ class Config:
             raise Exception,'no attribute: %s' % name
 
         
-        
+##########
+# Local configuration
+
+LOCAL_CONFIGFILE_NAME = '.enchant'
+
+def find_local_config_file(path=None):
+
+    if path is None:
+        path = os.getcwd()
+
+    has_config = lambda x: os.path.exists(os.path.join(x,LOCAL_CONFIGFILE_NAME))
+
+    # find the first configfile we encounter on our walk to the root
+    last_path = path
+    while not (path == last_path or has_config(path)):
+        last_path = path
+        path = os.path.dirname(path)
+
+    # open it, if we found it
+    if has_config(path):
+        return os.path.join(path,LOCAL_CONFIGFILE_NAME)
+    else:
+        return None
+
+def load_local_config(path=None):
+    
+    if path is None:
+        path = os.getcwd()
+
+    local_config = LocalConfig()
+
+    config_file = find_local_config_file(path)
+
+    # open it, if we found it
+    if config_file is not None:
+        local_config.load_json_config(config_file)
+
+    return local_config
+
+class LocalConfig:
+
+    def __init__(self,**kwargs):
+        self._notebook = kwargs.pop('notebook',None)
+
+        if len(kwargs) > 0:
+            raise Exception, 'unexpected arguments: %s' % kwargs.keys()
+
+    def load_json_config(self,fname):
+        config_info = json.load(open(fname,'r'))
+
+        self._notebook = config_info.get('notebook',None)
+
+    def write_json_config(self,fname):
+        data = {}
+        if self._notebook is not None:
+            data['notebook'] = self._notebook
+
+        json.dump(data, open(fname,'w'))
+
+    def __getattr__(self,name):
+        if name == 'notebook':
+            return self._notebook
+        else:
+            raise Exception,'no attribute: %s' % name
+

@@ -18,6 +18,29 @@ def context_to_config(context):
 
     return cinfo
 
+@subcmd(help='configure local settings')
+def local_config(parser,context,args):
+    parser.add_argument('-F','--force',action='store_true',
+                        help='force the creation of a local settings file in the current directory')
+    args = parser.parse_args(args)
+
+    local_config_filepath = config.find_local_config_file()
+   
+    if local_config_filepath is not None:
+        if args.force is False:
+            logger.error('use -F flag to override local config file at: %s' % local_config_filepath)
+        else:
+            logger.warn('overriding local config file at: %s' % local_config_filepath)
+
+    # get the config info
+    notebook = raw_input('notebook: ')
+
+    # write the new config info
+    local_config = config.LocalConfig(notebook=notebook)
+    local_config.write_json_config(os.path.join(os.getcwd(),config.LOCAL_CONFIGFILE_NAME))
+
+    # done!
+
 @subcmd(help='configure global settings')
 def global_config(parser,context,args):
     parser.add_argument('-f','--config_file',nargs='?',default=None,
@@ -62,7 +85,9 @@ def global_config(parser,context,args):
 
 @subcmd(help='send a text block to the server')
 def txt(parser,context,args):
-    parser.add_argument('notebook')
+    local_config = config.load_local_config()
+
+    parser.add_argument('-n','--notebook',required=local_config.notebook is None,default=local_config.notebook)
     parser.add_argument('title')
     parser.add_argument('content',help='the text to send. if "-", will read text from stdin')
 
@@ -77,7 +102,9 @@ def txt(parser,context,args):
 
 @subcmd(help='send an image block to the server')
 def img(parser,context,args):
-    parser.add_argument('notebook')
+    local_config = config.load_local_config()
+
+    parser.add_argument('-n','--notebook',required=local_config.notebook is None,default=local_config.notebook)
     parser.add_argument('title')
     parser.add_argument('image')
 
@@ -87,7 +114,9 @@ def img(parser,context,args):
 
 @subcmd(help='send an html block to the server')
 def html(parser,context,args):
-    parser.add_argument('notebook')
+    local_config = config.load_local_config()
+
+    parser.add_argument('-n','--notebook',required=local_config.notebook is None,default=local_config.notebook)
     parser.add_argument('title')
     parser.add_argument('content',help='the html to send. if "-", will read text from stdin')
 
@@ -99,6 +128,17 @@ def html(parser,context,args):
         html_content = sys.stdin.read()
 
     upload.send_html(args.notebook,args.title,html_content,None,context_to_config(context))
+
+"""
+@subcmd(help='send the results of an execution task to the server as a text block')
+def run(parser,context,args):
+    local_config = config.load_local_config()
+
+    parser.add_argument('-n','--notebook',required=local_config.notebook is None,default=local_config.notebook)
+    parser.add_argument('-t','--title',required=False,default=None)
+    parser.add_argument('cmd',nargs=argparse.REMAINDER)
+"""
+
 
 #####
 # Main function
