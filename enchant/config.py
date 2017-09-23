@@ -32,6 +32,16 @@ class Config:
         self._username = config_data.get('username',self._username)
         self._password = config_data.get('password',self._password)
 
+    def write_json_config(self,fname):
+        json.dump( {
+                        'host': self._host,
+                        'port': self._port,
+                        'username': self._username,
+                        'password': self._password
+                    },open(fname,'w'))
+
+        return
+
     def __getattr__(self,name):
         if name == 'host':
             return self._host

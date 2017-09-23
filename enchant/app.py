@@ -1,6 +1,7 @@
 import os.path, sys
 import logging
 import json
+import getpass
 
 from arghandler import ArgumentHandler, subcmd
 
@@ -16,6 +17,48 @@ def context_to_config(context):
                             password=context.password)
 
     return cinfo
+
+@subcmd(help='configure global settings')
+def global_config(parser,context,args):
+    parser.add_argument('-f','--config_file',nargs='?',default=None,
+                        help='the configuration file to write settings to')
+
+    args = parser.parse_args(args)
+
+    # build the context
+    cfg = None
+    if args.config_file is None:
+        cfg = context_to_config(context)
+    else:
+        cfg = config.Config()
+        if os.path.exists(args.config_file):
+            cfg.load_json_config(args.config_file)
+                     
+    # prompt for config info
+    host = raw_input('host [%s]: ' % cfg.host).strip()
+    host = host if len(host) > 0 else cfg.host
+
+    port = raw_input('port [%d]: ' % cfg.port).strip()
+    try:
+        port = int(port) if len(port) > 0 else cfg.port
+    except:
+        logger.error('port must be a number')
+        exit()
+
+
+    username = raw_input('username [%s]: ' % cfg.username).strip()
+    username = username if len(username) > 0 else cfg.username
+
+    password = getpass.getpass('password: ').strip()
+    password = password if len(password) > 0 else cfg.password
+
+    # update the context
+    cfg = config.Config(host=host,port=port,username=username,password=password)
+
+    # write the context out
+    fname = args.config_file if args.config_file is not None else config.DEFAULT_CONFIG_FILE
+    logger.info('writing config info to file: %s' % fname)
+    cfg.write_json_config(fname)
 
 @subcmd(help='send a text block to the server')
 def txt(parser,context,args):
