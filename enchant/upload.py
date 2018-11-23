@@ -24,6 +24,8 @@ def make_base_header(config_info,title,timestamp):
 # functions
 
 def handle_result(result_content):
+    logger.debug(f'result: {result_content}')
+
     try:
         result = json.loads(result_content)
         if result['result'] != 'ok':
