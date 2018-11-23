@@ -4,7 +4,7 @@ import json
 import requests
 import datetime
 
-import config
+from . import config
 
 logger = logging.getLogger(os.path.basename(__file__))
 

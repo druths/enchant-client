@@ -1,2 +1,2 @@
-from upload import *
-from config import *
+from .upload import *
+from .config import *

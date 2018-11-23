@@ -22,7 +22,7 @@ class Config:
         self._password = kwargs.pop('password','')
 
         if len(kwargs) > 0:
-            raise Exception, 'unknown arguments: %s' % ','.join(kwargs.keys())
+            raise Exception('unknown arguments: %s' % ','.join(kwargs.keys()))
 
     def load_json_config(self,fname):
         config_data = json.load(open(fname,'r'))
@@ -52,7 +52,7 @@ class Config:
         elif name == 'password':
             return self._password
         else:
-            raise Exception,'no attribute: %s' % name
+            raise Exception('no attribute: %s' % name)
 
         
 ##########
@@ -100,7 +100,7 @@ class LocalConfig:
         self._notebook = kwargs.pop('notebook',None)
 
         if len(kwargs) > 0:
-            raise Exception, 'unexpected arguments: %s' % kwargs.keys()
+            raise Exception('unexpected arguments: %s' % kwargs.keys())
 
     def load_json_config(self,fname):
         config_info = json.load(open(fname,'r'))
@@ -118,5 +118,5 @@ class LocalConfig:
         if name == 'notebook':
             return self._notebook
         else:
-            raise Exception,'no attribute: %s' % name
+            raise Exception('no attribute: %s' % name)
 

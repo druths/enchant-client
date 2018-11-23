@@ -7,8 +7,8 @@ import subprocess
 from arghandler import ArgumentHandler, subcmd
 import argparse
 
-import config
-import upload
+from . import config
+from . import upload
 
 logger = logging.getLogger(os.path.basename(__file__))
 
